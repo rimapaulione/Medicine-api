@@ -14,7 +14,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
+import java.awt.print.Pageable;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +28,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -51,6 +58,7 @@ class MedicineServiceTest {
     private MedicineSaveDto saveDto;
     private MedicineResponseDto responseDto;
 
+
     @BeforeEach
     void setUp() {
         medicine1 = new Medicine();
@@ -58,10 +66,14 @@ class MedicineServiceTest {
         medicine1.setName("Paracetamol");
         medicine1.setManufacturer(Manufacturer.PFIZER);
         medicine1.setStock(10);
+        medicine1.setExpiryDate(LocalDate.now().plusYears(1));
 
         medicine2 = new Medicine();
         medicine2.setId(2L);
         medicine2.setName("Ibuprofen");
+        medicine2.setManufacturer(Manufacturer.PFIZER);
+        medicine2.setStock(5);
+        medicine2.setExpiryDate(LocalDate.now().plusMonths(6));
 
         medicines = List.of(medicine1, medicine2);
 
@@ -75,6 +87,7 @@ class MedicineServiceTest {
         responseDto.setId(1L);
         responseDto.setName("Paracetamol");
     }
+
 
     @Test
     void test_shouldReturnAllMedicines() {
@@ -100,6 +113,7 @@ class MedicineServiceTest {
 
         verify(repository).findAll();
     }
+
 
     @Test
     void test_shouldReturnMedicineByIdObject() {
@@ -227,12 +241,13 @@ class MedicineServiceTest {
         updateDto.setStock(20);
 
         when(repository.findById(1L)).thenReturn(Optional.of(medicine1));
+        when(repository.save(any(Medicine.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         MedicineResponseDto responseDto = new MedicineResponseDto();
         responseDto.setId(1L);
         responseDto.setName("Updated name");
 
-        when(mapper.toDto(medicine1)).thenReturn(responseDto);
+        doReturn(responseDto).when(mapper).toDto(any(Medicine.class));
 
         MedicineResponseDto result = medicineService.update(1L, updateDto);
 

@@ -10,7 +10,11 @@ import org.example.medicine_api.exception.ValidationException;
 import org.example.medicine_api.model.Medicine;
 import org.example.medicine_api.model.Manufacturer;
 import org.example.medicine_api.repository.MedicineRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -28,6 +32,12 @@ public class MedicineService {
                 .stream()
                 .map(mapper::toDto)
                 .toList();
+    }
+
+    public Page<MedicineResponseDto> getAllPaginated(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Medicine> medicines = repository.findAll(pageable);
+        return medicines.map(mapper::toDto);
     }
 
     public MedicineResponseDto getById(final Long id) {
@@ -53,21 +63,23 @@ public class MedicineService {
         repository.deleteById(id);
     }
 
-    public MedicineResponseDto update(final Long id, final MedicineUpdateDto updateDrug) {
+    @Transactional
+    public MedicineResponseDto update(final Long id, final MedicineUpdateDto updateMedicine) {
 
-        validator.validateForUpdate(updateDrug);
+        validator.validateForUpdate(updateMedicine);
 
         Medicine existing = this.findById(id);
 
-        existing.setName(updateDrug.getName());
-        existing.setExpiryDate(updateDrug.getExpiryDate());
-        existing.setStock(updateDrug.getStock());
+        existing.setName(updateMedicine.getName());
+        existing.setExpiryDate(updateMedicine.getExpiryDate());
+        existing.setStock(updateMedicine.getStock());
 
-        repository.save(existing);
-        return mapper.toDto(existing);
+        return mapper.toDto( repository.save(existing));
     }
 
-    public MedicineResponseDto increase(Long id, Integer quantity) {
+    @Transactional
+    public MedicineResponseDto increase(final Long id, final Integer quantity) {
+
         validator.validateForStockChange(quantity);
 
         Medicine medicine = this.findById(id);
@@ -76,7 +88,8 @@ public class MedicineService {
         return mapper.toDto(repository.save(medicine));
     }
 
-    public MedicineResponseDto decrease(Long id, Integer quantity) {
+    @Transactional
+    public MedicineResponseDto decrease(final Long id, final Integer quantity) {
         validator.validateForStockChange(quantity);
 
         Medicine medicine = this.findById(id);

@@ -12,28 +12,15 @@ import java.time.LocalDate;
 public class MedicineValidationService {
 
     public void validateForCreate(MedicineSaveDto dto) {
-        if (dto.getName() == null || dto.getName().isBlank()) {
-            throw new ValidationException("Name can't be null!");
-        }
+        this.validateCommonFields(dto.getName(), dto.getExpiryDate(), dto.getStock());
+
         if (dto.getManufacturer() == null || dto.getManufacturer().isBlank()) {
             throw new ValidationException("Manufacturer can't be null!");
         }
-
         try {
             Manufacturer.valueOf(dto.getManufacturer().toUpperCase());
         } catch (IllegalArgumentException ex) {
             throw new ValidationException("Invalid manufacturer value");
-        }
-
-        if (dto.getExpiryDate() == null) {
-            throw new ValidationException("Expiry date cannot be null");
-        }
-
-        if (dto.getExpiryDate().isBefore(LocalDate.now())) {
-            throw new ValidationException("Expiry date cannot be in the past");
-        }
-        if (dto.getStock() == null || dto.getStock() < 0) {
-            throw new ValidationException("Stock cannot be negative or null");
         }
     }
 
@@ -46,25 +33,28 @@ public class MedicineValidationService {
     }
 
     public void validateForUpdate(MedicineUpdateDto dto) {
-        if (dto.getName() == null || dto.getName().isBlank()) {
-            throw new ValidationException("Name can't be null!");
-        }
-
-        if (dto.getExpiryDate() == null) {
-            throw new ValidationException("Expiry date cannot be null");
-        }
-
-        if (dto.getExpiryDate().isBefore(LocalDate.now())) {
-            throw new ValidationException("Expiry date cannot be in the past");
-        }
-        if (dto.getStock() == null || dto.getStock() < 0) {
-            throw new ValidationException("Stock cannot be negative or null");
-        }
+        this.validateCommonFields(dto.getName(), dto.getExpiryDate(), dto.getStock());
     }
 
     public void validateForStockChange(Integer quantity) {
         if (quantity == null || quantity <= 0) {
             throw new ValidationException("Quantity must be positive");
+        }
+    }
+
+    private void validateCommonFields(String name, LocalDate expiryDate, Integer stock) {
+        if (name == null || name.isBlank()) {
+            throw new ValidationException("Name can't be null!");
+        }
+        if (expiryDate == null) {
+            throw new ValidationException("Expiry date cannot be null");
+        }
+
+        if (expiryDate.isBefore(LocalDate.now())) {
+            throw new ValidationException("Expiry date cannot be in the past");
+        }
+        if (stock == null || stock < 0) {
+            throw new ValidationException("Stock cannot be negative or null");
         }
     }
 }
