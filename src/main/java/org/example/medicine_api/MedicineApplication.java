@@ -1,8 +1,8 @@
 package org.example.medicine_api;
 
-import org.example.medicine_api.model.Drug;
+import org.example.medicine_api.model.Medicine;
 import org.example.medicine_api.model.Manufacturer;
-import org.example.medicine_api.repository.DrugRepository;
+import org.example.medicine_api.repository.MedicineRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,17 +19,17 @@ public class MedicineApplication {
 
 
     @Bean
-    CommandLineRunner loadData(DrugRepository repository) {
+    CommandLineRunner loadData(MedicineRepository repository) {
         return args -> {
-            repository.save(new Drug(
+            repository.save(new Medicine(
                     null,
                     "Paracetamol",
                     Manufacturer.BAYER,
                     LocalDate.now().plusMonths(12),
-                    100
+                    0
             ));
 
-            repository.save(new Drug(
+            repository.save(new Medicine(
                     null,
                     "Ibuprofen",
                     Manufacturer.PFIZER,
@@ -37,7 +37,7 @@ public class MedicineApplication {
                     50
             ));
 
-            repository.save(new Drug(
+            repository.save(new Medicine(
                     null,
                     "Amoxicillin",
                     Manufacturer.NOVARTIS,
@@ -45,7 +45,7 @@ public class MedicineApplication {
                     30
             ));
 
-            repository.save(new Drug(
+            repository.save(new Medicine(
                     null,
                     "Aspirin",
                     Manufacturer.BAYER,
@@ -53,7 +53,7 @@ public class MedicineApplication {
                     200
             ));
 
-            repository.save(new Drug(
+            repository.save(new Medicine(
                     null,
                     "Vitamin C",
                     Manufacturer.ROCHE,

@@ -4,12 +4,10 @@ import lombok.Data;
 
 import java.time.LocalDate;
 
-
 @Data
-public class DrugRequestDto {
-    private Long id;
-    private String name;
-    private String manufacturer;
-    private LocalDate expiryDate;
+public class MedicineUpdateDto {
+
     private Integer stock;
+    private String name;
+    private LocalDate expiryDate;
 }

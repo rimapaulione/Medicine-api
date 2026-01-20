@@ -18,9 +18,9 @@ import java.time.LocalDate;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "drugs")
+@Table(name = "medicines")
 @Data
-public class Drug {
+public class Medicine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
