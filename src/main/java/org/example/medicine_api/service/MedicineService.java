@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -26,18 +27,11 @@ public class MedicineService {
     private final MedicineMapper mapper;
     private final MedicineValidationService validator;
 
-
     public List<MedicineResponseDto> getAll() {
         return repository.findAll()
                 .stream()
                 .map(mapper::toDto)
                 .toList();
-    }
-
-    public Page<MedicineResponseDto> getAllPaginated(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Medicine> medicines = repository.findAll(pageable);
-        return medicines.map(mapper::toDto);
     }
 
     public MedicineResponseDto getById(final Long id) {
@@ -74,7 +68,7 @@ public class MedicineService {
         existing.setExpiryDate(updateMedicine.getExpiryDate());
         existing.setStock(updateMedicine.getStock());
 
-        return mapper.toDto( repository.save(existing));
+        return mapper.toDto(repository.save(existing));
     }
 
     @Transactional
@@ -105,5 +99,48 @@ public class MedicineService {
     public Medicine findById(final Long id) {
         return repository.findById(id).orElseThrow(() ->
                 new NotFoundException("Medicine not found with id " + id));
+    }
+
+
+    //TODO add tests for all methods below:
+
+    public Page<MedicineResponseDto> getAllPaginated(final int page, final int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Medicine> medicines = repository.findAll(pageable);
+        return medicines.map(mapper::toDto);
+    }
+
+    public List<MedicineResponseDto> getAllExpired() {
+        LocalDate today = LocalDate.now();
+        return repository.findByExpiryDateBefore(today).stream()
+                .map(mapper::toDto)
+                .toList();
+
+    }
+
+    public List<MedicineResponseDto> getLowStock(final int stockValue) {
+        List<Medicine> medicines = repository.findAll();
+        return medicines.stream().filter(m -> m.getStock() <= stockValue)
+                .map(mapper::toDto)
+                .toList();
+    }
+
+    public List<MedicineResponseDto> searchMedicines(final String name, final Manufacturer manufacturer) {
+
+        List<Medicine> results;
+
+        if (name.length() < 3) {
+            return List.of();
+        }
+
+        if (manufacturer != null) {
+            results = repository.findByNameContainingIgnoreCaseAndManufacturer(name, manufacturer);
+        } else {
+            results = repository.findByNameContainingIgnoreCase(name);
+        }
+
+        return results.stream()
+                .map(mapper::toDto)
+                .toList();
     }
 }

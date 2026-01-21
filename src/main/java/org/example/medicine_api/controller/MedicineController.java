@@ -6,6 +6,7 @@ import org.example.medicine_api.dto.MedicineSaveDto;
 import org.example.medicine_api.dto.MedicineResponseDto;
 import org.example.medicine_api.dto.MedicineUpdateDto;
 import org.example.medicine_api.dto.StockUpdateDto;
+import org.example.medicine_api.model.Manufacturer;
 import org.example.medicine_api.service.MedicineService;
 
 import org.springframework.data.domain.Page;
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/medicines")
@@ -32,7 +35,7 @@ public class MedicineController {
     private final MedicineService medicineService;
 
     @GetMapping
-    public Object getAll() {
+    public List<MedicineResponseDto> getAll() {
         return medicineService.getAll();
     }
 
@@ -44,6 +47,21 @@ public class MedicineController {
         return medicineService.getAllPaginated(page, size);
     }
 
+    @GetMapping("/expired")
+    public List<MedicineResponseDto> getAllExpired() {
+        return medicineService.getAllExpired();
+    }
+
+    @GetMapping("/low-stock")
+    public List<MedicineResponseDto> getLowStock(@RequestParam(defaultValue = "10") int stockValue) {
+        return medicineService.getLowStock(stockValue);
+    }
+
+    @GetMapping("/search")
+    public List<MedicineResponseDto> search(@RequestParam String name,
+                                            @RequestParam(required = false) Manufacturer manufacturer) {
+        return medicineService.searchMedicines(name, manufacturer);
+    }
 
     @GetMapping("/{id}")
     public MedicineResponseDto getById(@PathVariable final Long id) {
