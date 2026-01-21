@@ -2,6 +2,7 @@ package org.example.medicine_api.service;
 
 
 import lombok.RequiredArgsConstructor;
+import org.example.medicine_api.dto.DashboardStatsDto;
 import org.example.medicine_api.dto.MedicineSaveDto;
 import org.example.medicine_api.dto.MedicineResponseDto;
 import org.example.medicine_api.dto.MedicineUpdateDto;
@@ -17,7 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -142,5 +145,17 @@ public class MedicineService {
         return results.stream()
                 .map(mapper::toDto)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public DashboardStatsDto getDashboardStats() {
+        List<Medicine> medicines = repository.findAll();
+
+        long totalMedicines = medicines.size();
+        int totalStock = medicines.stream().mapToInt(Medicine::getStock).sum();
+        long expiredCount = medicines.stream().filter(m -> m.getExpiryDate().isBefore(LocalDate.now())).count();
+        long lowStockCount = medicines.stream().filter(m -> m.getStock() <= 10).count();
+
+        return new DashboardStatsDto(totalMedicines, totalStock, expiredCount, lowStockCount);
     }
 }

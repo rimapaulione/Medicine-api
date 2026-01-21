@@ -2,6 +2,7 @@ package org.example.medicine_api.controller;
 
 
 import lombok.RequiredArgsConstructor;
+import org.example.medicine_api.dto.DashboardStatsDto;
 import org.example.medicine_api.dto.MedicineSaveDto;
 import org.example.medicine_api.dto.MedicineResponseDto;
 import org.example.medicine_api.dto.MedicineUpdateDto;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -55,6 +57,11 @@ public class MedicineController {
     @GetMapping("/low-stock")
     public List<MedicineResponseDto> getLowStock(@RequestParam(defaultValue = "10") int stockValue) {
         return medicineService.getLowStock(stockValue);
+    }
+
+    @GetMapping("/stats")
+    public DashboardStatsDto getDashboardStats() {
+        return medicineService.getDashboardStats();
     }
 
     @GetMapping("/search")
