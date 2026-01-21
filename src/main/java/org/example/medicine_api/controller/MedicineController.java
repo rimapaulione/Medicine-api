@@ -8,6 +8,7 @@ import org.example.medicine_api.dto.MedicineUpdateDto;
 import org.example.medicine_api.dto.StockUpdateDto;
 import org.example.medicine_api.service.MedicineService;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,41 +34,46 @@ public class MedicineController {
     @GetMapping
     public Object getAll() {
         return medicineService.getAll();
-}
-
-public Object getAllWithPages() {
-        return medicineService.getAll();
     }
 
-@GetMapping("/{id}")
-public MedicineResponseDto getById(@PathVariable final Long id) {
-    return medicineService.getById(id);
-}
+    @GetMapping("/pages")
+    public Page<MedicineResponseDto> getAllWithPages(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return medicineService.getAllPaginated(page, size);
+    }
 
-@PostMapping
-@ResponseStatus(HttpStatus.CREATED)
-public MedicineResponseDto add(@RequestBody final MedicineSaveDto newMedicine) {
-    return medicineService.add(newMedicine);
-}
 
-@DeleteMapping("/{id}")
-@ResponseStatus(HttpStatus.NO_CONTENT)
-public void delete(@PathVariable final Long id) {
-    medicineService.deleteById(id);
-}
+    @GetMapping("/{id}")
+    public MedicineResponseDto getById(@PathVariable final Long id) {
+        return medicineService.getById(id);
+    }
 
-@PutMapping("/{id}")
-public MedicineResponseDto update(@PathVariable final Long id, @RequestBody final MedicineUpdateDto updateDrug) {
-    return medicineService.update(id, updateDrug);
-}
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public MedicineResponseDto add(@RequestBody final MedicineSaveDto newMedicine) {
+        return medicineService.add(newMedicine);
+    }
 
-@PatchMapping("/{id}/increase")
-public MedicineResponseDto increase(@PathVariable final Long id, @RequestBody final StockUpdateDto dto) {
-    return medicineService.increase(id, dto.getQuantity());
-}
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable final Long id) {
+        medicineService.deleteById(id);
+    }
 
-@PatchMapping("/{id}/decrease")
-public MedicineResponseDto decrease(@PathVariable final Long id, @RequestBody final StockUpdateDto dto) {
-    return medicineService.decrease(id, dto.getQuantity());
-}
+    @PutMapping("/{id}")
+    public MedicineResponseDto update(@PathVariable final Long id, @RequestBody final MedicineUpdateDto updateDrug) {
+        return medicineService.update(id, updateDrug);
+    }
+
+    @PatchMapping("/{id}/increase")
+    public MedicineResponseDto increase(@PathVariable final Long id, @RequestBody final StockUpdateDto dto) {
+        return medicineService.increase(id, dto.getQuantity());
+    }
+
+    @PatchMapping("/{id}/decrease")
+    public MedicineResponseDto decrease(@PathVariable final Long id, @RequestBody final StockUpdateDto dto) {
+        return medicineService.decrease(id, dto.getQuantity());
+    }
 }
