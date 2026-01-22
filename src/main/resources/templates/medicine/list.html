@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>Medicines</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">Medicines</h1>
+            <p class="text-gray-600 mt-1">Manage your medicine inventory</p>
+        </div>
+        <a th:href="@{/medicines/new}" class="mt-4 sm:mt-0 inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors shadow-md">
+            <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Add Medicine
+        </a>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+        <form th:action="@{/medicines/search}" method="get" class="flex flex-col sm:flex-row gap-4">
+            <div class="flex-1">
+                <input type="text" name="name" placeholder="Search by name (min 3 characters)..."
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                       minlength="3" required>
+            </div>
+            <div class="sm:w-48">
+                <select name="manufacturer" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <option value="">All Manufacturers</option>
+                    <option value="PFIZER">Pfizer</option>
+                    <option value="BAYER">Bayer</option>
+                    <option value="NOVARTIS">Novartis</option>
+                    <option value="JOHNSON_AND_JOHNSON">Johnson & Johnson</option>
+                    <option value="ROCHE">Roche</option>
+                </select>
+            </div>
+            <button type="submit" class="px-6 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors">
+                Search
+            </button>
+        </form>
+    </div>
+
+    <!-- Medicines Table -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Manufacturer</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expiry Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr th:each="medicine : ${medicines.content}" class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${medicine.id}">#1</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <a th:href="@{/medicines/{id}(id=${medicine.id})}" class="text-sm font-medium text-gray-900 hover:text-primary" th:text="${medicine.name}">Medicine Name</a>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded" th:text="${medicine.manufacturer}">PFIZER</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm" th:classappend="${#temporals.format(medicine.expiryDate, 'yyyy-MM-dd') < #temporals.format(#temporals.createNow(), 'yyyy-MM-dd')} ? 'text-red-600 font-medium' : 'text-gray-500'" th:text="${medicine.expiryDate}">2024-12-31</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium" th:classappend="${medicine.stock <= 10} ? 'text-yellow-600' : 'text-gray-900'" th:text="${medicine.stock}">100</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span th:if="${#temporals.format(medicine.expiryDate, 'yyyy-MM-dd') < #temporals.format(#temporals.createNow(), 'yyyy-MM-dd')}" class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">Expired</span>
+                            <span th:if="${#temporals.format(medicine.expiryDate, 'yyyy-MM-dd') >= #temporals.format(#temporals.createNow(), 'yyyy-MM-dd') and medicine.stock <= 10}" class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Low Stock</span>
+                            <span th:if="${#temporals.format(medicine.expiryDate, 'yyyy-MM-dd') >= #temporals.format(#temporals.createNow(), 'yyyy-MM-dd') and medicine.stock > 10}" class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">OK</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <a th:href="@{/medicines/{id}(id=${medicine.id})}" class="text-primary hover:text-blue-700 mr-3">View</a>
+                            <a th:href="@{/medicines/{id}/edit(id=${medicine.id})}" class="text-gray-600 hover:text-gray-900">Edit</a>
+                        </td>
+                    </tr>
+                    <tr th:if="${medicines.content.isEmpty()}">
+                        <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                            <svg class="w-12 h-12 mx-auto text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                            </svg>
+                            <p>No medicines found</p>
+                            <a th:href="@{/medicines/new}" class="text-primary hover:underline">Add your first medicine</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="px-6 py-4 border-t" th:if="${!medicines.content.isEmpty()}">
+            <div th:replace="~{fragments/pagination :: pagination(${medicines}, '/medicines')}"></div>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

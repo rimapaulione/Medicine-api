@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<nav th:fragment="pagination(page, baseUrl)" aria-label="Pagination" class="flex items-center justify-between">
+    <div class="hidden sm:block">
+        <p class="text-sm text-gray-700">
+            Showing page <span class="font-medium" th:text="${page.number + 1}">1</span>
+            of <span class="font-medium" th:text="${page.totalPages}">10</span>
+            (<span class="font-medium" th:text="${page.totalElements}">100</span> total)
+        </p>
+    </div>
+    <div class="flex-1 flex justify-between sm:justify-end gap-2">
+        <a th:href="@{${baseUrl}(page=${page.number - 1}, size=${page.size})}"
+           th:classappend="${page.first} ? 'pointer-events-none opacity-50' : ''"
+           class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+            Previous
+        </a>
+        <a th:href="@{${baseUrl}(page=${page.number + 1}, size=${page.size})}"
+           th:classappend="${page.last} ? 'pointer-events-none opacity-50' : ''"
+           class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+            Next
+        </a>
+    </div>
+</nav>
+
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>Expired Medicines</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <!-- Page Header -->
+    <div class="mb-6">
+        <nav class="text-sm text-gray-500 mb-2">
+            <a th:href="@{/medicines}" class="hover:text-primary">Medicines</a>
+            <span class="mx-2">/</span>
+            <span>Expired</span>
+        </nav>
+        <h1 class="text-3xl font-bold text-gray-800">Expired Medicines</h1>
+        <p class="text-gray-600 mt-1">Medicines that have passed their expiry date</p>
+    </div>
+
+    <!-- Warning Banner -->
+    <div th:if="${!medicines.isEmpty()}" class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r-lg">
+        <div class="flex items-center">
+            <svg class="w-6 h-6 text-red-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+            <div>
+                <p class="font-medium text-red-800">
+                    <span th:text="${medicines.size()}">0</span> medicine(s) have expired
+                </p>
+                <p class="text-sm text-red-600">These medicines should be removed from inventory</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success State -->
+    <div th:if="${medicines.isEmpty()}" class="bg-white rounded-lg shadow-md p-12 text-center">
+        <svg class="w-16 h-16 text-green-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <h2 class="text-xl font-semibold text-gray-800 mb-2">No Expired Medicines</h2>
+        <p class="text-gray-500 mb-4">All medicines in your inventory are within their expiry dates.</p>
+        <a th:href="@{/medicines}" class="text-primary hover:underline">View all medicines</a>
+    </div>
+
+    <!-- Expired Medicines Table -->
+    <div th:if="${!medicines.isEmpty()}" class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-red-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-red-700 uppercase tracking-wider">ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-red-700 uppercase tracking-wider">Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-red-700 uppercase tracking-wider">Manufacturer</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-red-700 uppercase tracking-wider">Expiry Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-red-700 uppercase tracking-wider">Stock</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-red-700 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    <tr th:each="medicine : ${medicines}" class="hover:bg-red-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${medicine.id}">#1</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <a th:href="@{/medicines/{id}(id=${medicine.id})}" class="text-sm font-medium text-gray-900 hover:text-primary" th:text="${medicine.name}">Medicine Name</a>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded" th:text="${medicine.manufacturer}">PFIZER</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="text-sm text-red-600 font-medium" th:text="${medicine.expiryDate}">2024-01-01</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" th:text="${medicine.stock}">100</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <a th:href="@{/medicines/{id}(id=${medicine.id})}" class="text-primary hover:text-blue-700 mr-3">View</a>
+                            <form th:if="${medicine.stock == 0}" th:action="@{/medicines/{id}/delete(id=${medicine.id})}" method="post" class="inline"
+                                  onsubmit="return confirm('Delete this expired medicine?');">
+                                <button type="submit" class="text-red-600 hover:text-red-800">Delete</button>
+                            </form>
+                            <span th:if="${medicine.stock > 0}" class="text-gray-400 text-xs">Stock must be 0</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <div class="mt-6">
+        <a th:href="@{/medicines}" class="inline-flex items-center text-gray-600 hover:text-primary">
+            <svg class="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+            Back to Medicines
+        </a>
+    </div>
+
+</div>
+</body>
+</html>
