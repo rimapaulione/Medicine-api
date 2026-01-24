@@ -10,6 +10,7 @@ import org.example.medicine_api.dto.StockUpdateDto;
 import org.example.medicine_api.model.Manufacturer;
 import org.example.medicine_api.service.MedicineService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,7 +34,7 @@ import java.util.Map;
 @RequestMapping("/api/medicines")
 @RequiredArgsConstructor
 public class MedicineController {
-
+    @Autowired
     private final MedicineService medicineService;
 
     @GetMapping
