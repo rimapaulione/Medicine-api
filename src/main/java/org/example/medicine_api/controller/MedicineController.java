@@ -3,13 +3,12 @@ package org.example.medicine_api.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.medicine_api.dto.DashboardStatsDto;
-import org.example.medicine_api.dto.MedicineSaveDto;
 import org.example.medicine_api.dto.MedicineResponseDto;
+import org.example.medicine_api.dto.MedicineSaveDto;
 import org.example.medicine_api.dto.MedicineUpdateDto;
 import org.example.medicine_api.dto.StockUpdateDto;
 import org.example.medicine_api.model.Manufacturer;
 import org.example.medicine_api.service.MedicineService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -21,13 +20,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Map;
 
 
 @RestController
@@ -44,8 +41,8 @@ public class MedicineController {
 
     @GetMapping("/pages")
     public Page<MedicineResponseDto> getAllWithPages(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "0") final int page,
+            @RequestParam(defaultValue = "10") final int size
     ) {
         return medicineService.getAllPaginated(page, size);
     }
@@ -56,7 +53,7 @@ public class MedicineController {
     }
 
     @GetMapping("/low-stock")
-    public List<MedicineResponseDto> getLowStock(@RequestParam(defaultValue = "10") int stockValue) {
+    public List<MedicineResponseDto> getLowStock(@RequestParam(defaultValue = "10") final int stockValue) {
         return medicineService.getLowStock(stockValue);
     }
 
@@ -66,8 +63,8 @@ public class MedicineController {
     }
 
     @GetMapping("/search")
-    public List<MedicineResponseDto> search(@RequestParam String name,
-                                            @RequestParam(required = false) Manufacturer manufacturer) {
+    public List<MedicineResponseDto> search(@RequestParam final String name,
+                                            @RequestParam(required = false) final Manufacturer manufacturer) {
         return medicineService.searchMedicines(name, manufacturer);
     }
 
