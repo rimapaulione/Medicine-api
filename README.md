@@ -1,36 +1,33 @@
-# Medicine Inventory API
+# medicine-api
 
-A REST API for managing pharmacy medicine inventory, built with Spring Boot 4.0.1.
+A small Spring Boot project I built **for learning**. Three things in one place:
 
-## Features
+1. **REST CRUD** — `@RestController` endpoints for medicines with DTOs, a mapper, and Bean Validation (`@Valid`, `@NotNull`, `@Positive`).
+2. **Pagination & queries** — Spring Data JPA `Pageable` results plus derived queries for expired stock, low stock, and name/manufacturer search.
+3. **Error handling** — `@RestControllerAdvice` with `GlobalExceptionHandler` turns `NotFoundException` / `ValidationException` and validation errors into clean JSON responses.
 
-- CRUD operations for medicines
-- Pagination support
-- Expired and low-stock medicine tracking
-- Dashboard statistics
-- Search by name and manufacturer
-- Swagger/OpenAPI documentation
-- Input validation and error handling
+Bonus: dashboard stats endpoint (`/api/medicines/stats`) and stock increase/decrease PATCH endpoints with a "stock must be 0 before delete" rule.
 
-## Tech Stack
+Not for production — uses an in-memory H2 database, no authentication, and no persistence between restarts.
 
-- Java 17, Spring Boot 4.0.1
-- Spring Data JPA, H2 in-memory database
-- Lombok, Springdoc OpenAPI 3.0.1
-- JUnit 5, Mockito
+## How to run
 
-## Getting Started
+Requires Java 17.
 
 ```bash
+git clone git@github.com:rimapaulione/Medicine-api.git
+cd Medicine-api
 ./mvnw spring-boot:run
 ```
 
 The server starts on **http://localhost:8081**.
 
-- Swagger UI: http://localhost:8081/swagger-ui.html
-- H2 Console: http://localhost:8081/h2-console (JDBC URL: `jdbc:h2:mem:testdb`, user: `sa`, no password)
+Then open:
 
-## API Endpoints
+- Swagger UI — http://localhost:8081/swagger-ui.html
+- H2 console — http://localhost:8081/h2-console (JDBC URL `jdbc:h2:mem:testdb`, user `sa`, no password)
+
+## API endpoints
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
@@ -47,12 +44,14 @@ The server starts on **http://localhost:8081**.
 | GET | `/api/medicines/stats` | Dashboard statistics |
 | GET | `/api/medicines/search?name=x&manufacturer=PFIZER` | Search medicines |
 
-## Manufacturers
+Manufacturers: `PFIZER`, `BAYER`, `NOVARTIS`, `JOHNSON_AND_JOHNSON`, `ROCHE`.
 
-`PFIZER`, `BAYER`, `NOVARTIS`, `JOHNSON_AND_JOHNSON`, `ROCHE`
-
-## Running Tests
+## Running tests
 
 ```bash
 ./mvnw test
 ```
+
+## Stack
+
+Java 17 · Spring Boot 4.0.1 · Spring Web · Spring Data JPA · H2 · Lombok · springdoc-openapi · JUnit 5 · Mockito
